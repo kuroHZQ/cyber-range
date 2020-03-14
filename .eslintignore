@@ -1,0 +1,9 @@
+src/**/*-test.js
+public
+lib
+server
+Pampasfile-default.js
+app/services/client
+@terminus
+extract.js
+app/services/client.js

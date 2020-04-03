@@ -14,6 +14,8 @@ function webpackCommonConfigCreator(options) {
     entry: './src/index.js',
     output: {
       path: path.resolve(__dirname, '../build'),
+      filename: '[name].js',
+      chunkFilename: '[name].[chunkhash].js',
       publicPath: '/',
     },
     module: {
@@ -26,7 +28,17 @@ function webpackCommonConfigCreator(options) {
               loader: 'babel-loader',
               options: {
                 presets: ['@babel/preset-react'],
-                plugins: ['react-hot-loader/babel'],
+                plugins: [
+                  ['react-hot-loader/babel'],
+                  [
+                    'import',
+                    {
+                      libraryName: 'antd',
+                      // "libraryDirectory": "es",
+                      style: 'css', // `style: true` 会加载 less 文件
+                    },
+                  ],
+                ],
               },
             },
           ],
@@ -69,7 +81,7 @@ function webpackCommonConfigCreator(options) {
             {
               loader: 'file-loader',
               options: {
-                name: 'css/[name].css',
+                name: 'css/[name].[hash].css',
                 publicPath: '/',
               },
             },

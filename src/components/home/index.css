@@ -1,0 +1,30 @@
+.img {
+  width: 100%;
+  float: right;
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+  background-size: contain;
+}
+.title {
+  color: #434e59;
+  font-size: 72px;
+  font-weight: 600;
+  line-height: 72px;
+  margin-bottom: 24px;
+}
+.welcome {
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  height: 100%;
+  min-height: 500px;
+}
+.imgBlock {
+  -webkit-box-flex: 0;
+  -ms-flex: 0 0 62.5%;
+  flex: 0 0 62.5%;
+  width: 62.5%;
+  padding-right: 52px;
+  zoom: 1;
+}

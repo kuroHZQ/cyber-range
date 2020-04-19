@@ -18,6 +18,16 @@ function webpackCommonConfigCreator(options) {
       chunkFilename: '[name].[chunkhash].js',
       publicPath: '/',
     },
+    // 专门解决路径相关问题
+    resolve: {
+      extensions: ['.js', '.vue', '.json'],
+      alias: {
+        '@': path.resolve('src'), // 给src起了个别名
+        // assets: resolve('@/assets'),
+        // components: resolve('@/components'),
+        // views: resolve('@/views'),
+      },
+    },
     module: {
       rules: [
         {
@@ -27,8 +37,11 @@ function webpackCommonConfigCreator(options) {
             {
               loader: 'babel-loader',
               options: {
-                presets: ['@babel/preset-react'],
+                presets: ['@babel/preset-env', '@babel/preset-react'],
                 plugins: [
+                  // '@babel/plugin-transform-arrow-functions',
+                  ['@babel/plugin-proposal-decorators', {legacy: true}], // 支持装饰器
+                  '@babel/plugin-proposal-class-properties', //  react里class里支持'property = '写法
                   ['react-hot-loader/babel'],
                   [
                     'import',
@@ -73,19 +86,25 @@ function webpackCommonConfigCreator(options) {
             ],
           }),
         },
+        // {
+        //   test: /\.(css|scss)$/,
+        //   exclude: path.resolve(__dirname, '../src'),
+        //   use: [
+        //     'style-loader/url',
+        //     {
+        //       loader: 'file-loader',
+        //       options: {
+        //         name: 'css/[name].css',
+        //         publicPath: '/',
+        //       },
+        //     },
+        //   ],
+        // },
+        // 针对antd单独设置
         {
-          test: /\.(css|scss)$/,
-          exclude: path.resolve(__dirname, '../src'),
-          use: [
-            'style-loader/url',
-            {
-              loader: 'file-loader',
-              options: {
-                name: 'css/[name].[hash].css',
-                publicPath: '/',
-              },
-            },
-          ],
+          test: /\.css$/,
+          include: [/[\\/]node_modules[\\/].*antd/],
+          use: [{loader: 'style-loader'}, {loader: 'css-loader'}],
         },
         {
           test: /\.(woff|woff2|eot|ttf|otf)$/,
@@ -118,7 +137,7 @@ function webpackCommonConfigCreator(options) {
         ],
       }),
       new ExtractTextPlugin({
-        filename: 'css/[name][hash].css',
+        filename: 'css/[name].[hash].css',
       }),
     ],
     optimization: {

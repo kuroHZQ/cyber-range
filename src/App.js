@@ -1,23 +1,15 @@
 import React from 'react'
-import './App.css'
+import {HashRouter as Router, Route} from 'react-router-dom'
+import Frame from './components/frame'
+import Login from './components/login'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer">
-          Learn React
-        </a>
-      </header>
-    </div>
-  )
+export default class extends React.Component {
+  render() {
+    return (
+      <Router>
+        <Route exact path="/login" component={Login} />
+        <Route path="/view" component={Frame} />
+      </Router>
+    )
+  }
 }
-
-export default App

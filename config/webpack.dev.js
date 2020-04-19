@@ -10,6 +10,18 @@ const config = {
   devServer: {
     contentBase: path.join(__dirname, '../dist'),
     hot: true,
+    // 跨域处理
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8101', // 本地后端服务
+        changeOrigin: true,
+      },
+      '/docker': {
+        target: 'http://49.235.52.63:2375', // docker remote api
+        changeOrigin: true,
+        pathRewrite: {'^/docker': ''}, // 将/docker 重定向为 / ，localhost/docker 实际请求的是 49.235.52.63:2375/
+      },
+    },
   },
 }
 

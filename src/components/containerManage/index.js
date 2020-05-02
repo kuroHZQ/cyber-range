@@ -1,20 +1,26 @@
 import React from 'react'
 import moment from 'moment'
-import {Table, message, Popconfirm} from 'antd'
+import {Table, message, Popconfirm, Spin} from 'antd'
 import request from '@/utils/request'
 
 export default class extends React.Component {
   state = {
     containerList: [],
+    loading: [],
   }
   componentDidMount() {
     this.getContainerList()
   }
   getColumns = () => [
     {
-      title: '容器名称',
-      dataIndex: 'Names',
+      title: '容器ID',
+      dataIndex: 'Id',
+      render: value => value.slice(0, 12),
     },
+    // {
+    //   title: '容器名称',
+    //   dataIndex: 'Names',
+    // },
     {
       title: '所用镜像',
       dataIndex: 'Image',
@@ -35,11 +41,15 @@ export default class extends React.Component {
       dataIndex: 'Status',
     },
     {
-      title: '端口号',
+      title: '端口号(内部端口号)',
       dataIndex: 'Ports',
       render: value => {
-        const portInfo = value.find(item => item.IP === '0.0.0.0')
-        return portInfo ? portInfo.PublicPort : '-'
+        const portsInfo = value.filter(item => item.IP === '0.0.0.0')
+        return portsInfo && portsInfo.length
+          ? portsInfo
+              .map(item => `${item.PublicPort}(${item.PrivatePort})`)
+              .join(',')
+          : '-'
       },
     },
     {
@@ -50,25 +60,30 @@ export default class extends React.Component {
         return [
           record.State === 'running' ? (
             <a
-              style={{marginRight: '4px'}}
+              style={{marginRight: '4px', display: 'inline-Block'}}
               onClick={() => {
                 this.closeContainer(record.Id)
               }}>
-              关闭
+              <Spin
+                spinning={this.state.loading[`close_${record.Id}`] || false}>
+                关闭
+              </Spin>
             </a>
           ) : (
             <a
-              style={{marginRight: '4px'}}
+              style={{marginRight: '4px', display: 'inline-Block'}}
               onClick={() => {
                 this.openContainer(record.Id)
               }}>
-              打开
+              <Spin spinning={this.state.loading[`open_${record.Id}`] || false}>
+                打开
+              </Spin>
             </a>
           ),
           <Popconfirm
             placement="topRight"
             title="确认删除吗"
-            onConfirm={() => this.deleteContainer(value.id)}
+            onConfirm={() => this.deleteContainer(value.Id)}
             okText="确认"
             cancelText="取消">
             <a style={{marginRight: '4px'}}>删除</a>
@@ -83,23 +98,48 @@ export default class extends React.Component {
     })
   }
   openContainer = id => {
-    request.post(`/docker/containers/${id}/start`).then(result => {
-      this.getContainerList()
-      message.success('打开容器成功')
-    })
+    const {loading} = this.state
+    loading[`open_${id}`] = true
+    request
+      .post(`/docker/containers/${id}/start`)
+      .then(() => {
+        this.getContainerList()
+        message.success('打开容器成功')
+        loading[`open_${id}`] = false
+        this.setState({loading})
+      })
+      .catch(() => {
+        loading[`open_${id}`] = false
+        this.setState({loading})
+      })
   }
   closeContainer = id => {
-    request.post(`/docker/containers/${id}/stop`).then(result => {
+    const {loading} = this.state
+    loading[`close_${id}`] = true
+    this.setState({loading})
+    request
+      .post(`/docker/containers/${id}/stop`)
+      .then(() => {
+        this.getContainerList()
+        message.success('关闭容器成功')
+        loading[`close_${id}`] = false
+        this.setState({loading})
+      })
+      .catch(() => {
+        loading[`close_${id}`] = false
+        this.setState({loading})
+      })
+  }
+  deleteContainer = id => {
+    request.delete(`/docker/containers/${id}`).then(() => {
       this.getContainerList()
-      message.success('关闭容器成功')
+      message.success('删除容器成功')
     })
   }
-  deleteContainer = () => {}
   render() {
     return (
       <div style={{background: '#fff'}}>
         <Table
-          tableKey={this.state.tableKey}
           columns={this.getColumns()}
           dataSource={this.state.containerList}
         />

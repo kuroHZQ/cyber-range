@@ -17,7 +17,7 @@ const config = {
         changeOrigin: true,
       },
       '/docker': {
-        target: 'http://49.235.52.63:2375', // docker remote api
+        target: 'http://49.235.52.63:9527', // docker remote api
         changeOrigin: true,
         pathRewrite: {'^/docker': ''}, // 将/docker 重定向为 / ，localhost/docker 实际请求的是 49.235.52.63:2375/
       },

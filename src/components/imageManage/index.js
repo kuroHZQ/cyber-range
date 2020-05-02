@@ -33,6 +33,9 @@ export default class extends React.Component {
     imageList: [],
   }
   componentDidMount() {
+    this.getImageList()
+  }
+  getImageList = () => {
     request('/docker/images/json').then(result => {
       this.setState({imageList: result})
     })
@@ -42,15 +45,12 @@ export default class extends React.Component {
       title: '镜像ID',
       dataIndex: 'Id',
       width: 250,
-      tip: true,
+      render: value => value.slice(7, 19),
     },
     {
-      title: '镜像库地址',
+      title: '镜像:TAG',
       dataIndex: 'RepoTags',
-    },
-    {
-      title: '容器数',
-      dataIndex: 'Containers',
+      render: value => value.join(' | '),
     },
     {
       title: '创建时间',
@@ -69,12 +69,12 @@ export default class extends React.Component {
       title: '操作',
       fixed: 'right',
       width: 100,
-      render: value => {
+      render: (value, record) => {
         return (
           <Popconfirm
             placement="topRight"
             title="确认删除吗"
-            onConfirm={() => this.deleteImage(value.id)}
+            onConfirm={() => this.deleteImage(record.RepoTags)}
             okText="确认"
             cancelText="取消">
             <a>删除</a>
@@ -83,7 +83,14 @@ export default class extends React.Component {
       },
     },
   ]
-  deleteImage = () => {}
+  deleteImage = RepoTags => {
+    RepoTags.forEach(value => {
+      request.delete(`/docker/images/${value}`).then(() => {
+        this.getImageList()
+        message.success(`已删除镜像${value}`)
+      })
+    })
+  }
   render() {
     return (
       <div style={{background: '#fff'}}>

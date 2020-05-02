@@ -6,8 +6,11 @@ import Menu from './menu'
 import HeaderTab from './header'
 import Home from './home'
 import Courses from './courses'
+import SelectedCourses from './selectedCourse'
 import ImageManage from './imageManage'
 import ContainerManage from './containerManage'
+import CourseManage from './courseManage'
+import CourseManageDetail from './courseManageDetail'
 
 // eslint-disable-next-line object-curly-newline
 const {Header, Content, Footer, Sider} = Layout
@@ -31,9 +34,11 @@ export default class extends React.Component {
           <div
             style={{
               height: '64px',
+              lineHeight: '64px',
               background: 'gray',
+              textAlign: 'center',
             }}>
-            网络靶场logo
+            <h2>网络靶场</h2>
           </div>
           <Menu />
         </Sider>
@@ -57,11 +62,22 @@ export default class extends React.Component {
           <Content style={{margin: '0 16px', paddingTop: '24px'}}>
             <Route path="/view" exact component={Home} />
             <Route path="/view/courses" exact component={Courses} />
+            <Route
+              path="/view/selectcourses"
+              exact
+              component={SelectedCourses}
+            />
             <Route path="/view/image-manage" exact component={ImageManage} />
             <Route
               path="/view/container-manage"
               exact
               component={ContainerManage}
+            />
+            <Route path="/view/course-manage" exact component={CourseManage} />
+            <Route
+              path="/view/course-manage/detail"
+              exact
+              component={CourseManageDetail}
             />
           </Content>
           <Footer style={{textAlign: 'center'}}>网络靶场训练环境</Footer>

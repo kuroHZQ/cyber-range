@@ -1,11 +1,7 @@
 import React from 'react'
 import {Link} from 'react-router-dom'
 import {Menu} from 'antd'
-import {
-  MailOutlined,
-  AppstoreOutlined,
-  SettingOutlined,
-} from '@ant-design/icons'
+import {ExperimentOutlined, CloudOutlined} from '@ant-design/icons'
 
 const {SubMenu} = Menu
 
@@ -46,7 +42,7 @@ export default class extends React.Component {
           key="sub1"
           title={
             <span>
-              <MailOutlined />
+              <ExperimentOutlined />
               <span>靶场</span>
             </span>
           }>
@@ -69,6 +65,15 @@ export default class extends React.Component {
                 容器管理
               </Link>
             </Menu.Item>,
+            <Menu.Item key="coursemanage">
+              <Link
+                to={{
+                  pathname: '/view/course-manage',
+                  query: {breadCrumbName: ['靶场', '靶场管理']},
+                }}>
+                靶场管理
+              </Link>
+            </Menu.Item>,
           ]}
           <Menu.Item key="course">
             <Link
@@ -79,23 +84,21 @@ export default class extends React.Component {
               web安全网络靶场
             </Link>
           </Menu.Item>
-          {userInfo.type === 1 && (
-            <Menu.Item key="selectCourse">
-              <Link
-                to={{
-                  pathname: '/view/selectCourses',
-                  query: {breadCrumbName: ['靶场', '已选课程']},
-                }}>
-                已选课程
-              </Link>
-            </Menu.Item>
-          )}
+          <Menu.Item key="selectCourse">
+            <Link
+              to={{
+                pathname: '/view/selectcourses',
+                query: {breadCrumbName: ['靶场', '已选靶场']},
+              }}>
+              已选靶场
+            </Link>
+          </Menu.Item>
         </SubMenu>
         <SubMenu
           key="sub3"
           title={
             <span>
-              <SettingOutlined />
+              <CloudOutlined />
               <span>常见网络靶场介绍</span>
             </span>
           }>

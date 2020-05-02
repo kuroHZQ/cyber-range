@@ -40,6 +40,15 @@ function webpackCommonConfigCreator(options) {
                 presets: ['@babel/preset-env', '@babel/preset-react'],
                 plugins: [
                   // '@babel/plugin-transform-arrow-functions',
+                  // [
+                  //   'babel-plugin-transform-runtime',
+                  //   {
+                  //     helpers: false,
+                  //     polyfill: false,
+                  //     regenerator: true,
+                  //     moduleName: 'babel-runtime',
+                  //   },
+                  // ],
                   ['@babel/plugin-proposal-decorators', {legacy: true}], // 支持装饰器
                   '@babel/plugin-proposal-class-properties', //  react里class里支持'property = '写法
                   ['react-hot-loader/babel'],

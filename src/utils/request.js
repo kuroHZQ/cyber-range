@@ -151,7 +151,8 @@ request.put = (url, body, options = {}) => {
 }
 
 request.delete = (url, query, options = {}) => {
-  return request(`${url}?${stringify(query)}`, {
+  // return request(`${url}?${stringify(query)}`, {
+  return request(`${url}`, {
     method: 'DELETE',
     ...options,
   })

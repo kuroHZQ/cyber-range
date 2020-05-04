@@ -51,6 +51,8 @@ class extends React.Component {
     currentCourse: {},
     editModalVisible: false,
     isEdit: false,
+    userList: [],
+    userListModalVisible: false,
   }
   componentDidMount = () => {
     this.getCourseList()
@@ -80,14 +82,30 @@ class extends React.Component {
       })
     })
   }
+  getUserList = courseId => {
+    request(`/api/selectcourse/user/list?courseId=${courseId}`).then(result => {
+      this.setState(
+        {
+          userList: result.data.selectCourseStudentList,
+        },
+        () => {
+          this.setUserListModalVisible(true)
+        }
+      )
+    })
+  }
   getColumns = () => [
     {
       title: '序号',
       render: (value, record, index) => index + 1,
     },
     {
-      title: '漏洞名称',
+      title: '靶场名称',
       dataIndex: 'courseName',
+    },
+    {
+      title: '所用镜像',
+      dataIndex: 'image',
     },
     {
       title: '难度',
@@ -97,9 +115,15 @@ class extends React.Component {
     {
       title: '操作',
       fixed: 'right',
-      width: 100,
+      width: 200,
       render: (value, record) => {
         return [
+          <a
+            onClick={() => {
+              this.getUserList(record.courseId)
+            }}>
+            查看使用用户
+          </a>,
           <a
             onClick={() => {
               this.setEditModalVisible(true, record, true)
@@ -123,6 +147,11 @@ class extends React.Component {
       editModalVisible,
       currentCourse,
       isEdit,
+    })
+  }
+  setUserListModalVisible = userListModalVisible => {
+    this.setState({
+      userListModalVisible,
     })
   }
   editModal = () => {
@@ -195,6 +224,36 @@ class extends React.Component {
       )
     )
   }
+  userListModal = () => {
+    const {userList, userListModalVisible} = this.state
+    return (
+      userListModalVisible && (
+        <Modal
+          title="正在使用的用户"
+          visible
+          okText="确认"
+          // cancelText="取消"
+          onOk={() => this.setUserListModalVisible(false, [])}
+          // onCancel={() => this.setUserListModalVisible(false, [])}
+          cancelButtonProps={{hidden: true}}>
+          {userList &&
+            userList.map((userInfo, index) => {
+              return (
+                <div>
+                  <div>用户{index + 1}:</div>
+                  <div>
+                    ID: {userInfo.id} 姓名: {userInfo.name} 身份:{' '}
+                    {userInfo.type ? '学生' : '管理员'} 容器ID:
+                    {userInfo.containerId.slice(0, 12)}
+                  </div>
+                </div>
+              )
+            })}
+          {userList && userList.length === 0 && <div>暂无使用用户</div>}
+        </Modal>
+      )
+    )
+  }
   addCourse = () => {
     const {courseType} = this.state
     this.props.form.validateFieldsAndScroll((err, values) => {
@@ -239,9 +298,13 @@ class extends React.Component {
     })
   }
   deleteCourse = id => {
-    request.delete(`/api/course/delete/${id}`).then(() => {
-      message.success('删除成功！')
-      this.getCourseList()
+    request.delete(`/api/course/delete/${id}`).then(result => {
+      if (result.success) {
+        message.success('删除成功！')
+        this.getCourseList()
+      } else {
+        message.error(result.message)
+      }
     })
   }
   render() {
@@ -263,6 +326,7 @@ class extends React.Component {
         />
         <Table columns={this.getColumns()} dataSource={this.state.courseList} />
         {this.editModal()}
+        {this.userListModal()}
       </div>
     )
   }

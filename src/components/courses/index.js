@@ -78,7 +78,7 @@ export default class extends React.Component {
   ]
   runContainer = course => {
     const config = {
-      Image: 'area39/webug:latest',
+      Image: course.image,
       ExposedPorts: {
         '80/tcp': {},
       },

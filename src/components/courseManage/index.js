@@ -122,9 +122,13 @@ class extends React.Component {
     )
   }
   deleteType = id => {
-    request.delete(`/api/coursetype/delete/${id}`).then(() => {
-      message.success('删除成功！')
-      this.getCourseTypeList()
+    request.delete(`/api/coursetype/delete/${id}`).then(result => {
+      if (result.success) {
+        message.success('删除成功！')
+        this.getCourseTypeList()
+      } else {
+        message.error(result.message)
+      }
     })
   }
   render() {

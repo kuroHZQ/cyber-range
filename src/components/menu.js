@@ -46,35 +46,36 @@ export default class extends React.Component {
               <span>靶场</span>
             </span>
           }>
-          {userInfo.type === 0 && [
-            <Menu.Item key="image">
-              <Link
-                to={{
-                  pathname: '/view/image-manage',
-                  query: {breadCrumbName: ['靶场', '镜像管理']},
-                }}>
-                镜像管理
-              </Link>
-            </Menu.Item>,
-            <Menu.Item key="container">
-              <Link
-                to={{
-                  pathname: '/view/container-manage',
-                  query: {breadCrumbName: ['靶场', '容器管理']},
-                }}>
-                容器管理
-              </Link>
-            </Menu.Item>,
-            <Menu.Item key="coursemanage">
-              <Link
-                to={{
-                  pathname: '/view/course-manage',
-                  query: {breadCrumbName: ['靶场', '靶场管理']},
-                }}>
-                靶场管理
-              </Link>
-            </Menu.Item>,
-          ]}
+          {userInfo &&
+            userInfo.type === 0 && [
+              <Menu.Item key="image">
+                <Link
+                  to={{
+                    pathname: '/view/image-manage',
+                    query: {breadCrumbName: ['靶场', '镜像管理']},
+                  }}>
+                  镜像管理
+                </Link>
+              </Menu.Item>,
+              <Menu.Item key="container">
+                <Link
+                  to={{
+                    pathname: '/view/container-manage',
+                    query: {breadCrumbName: ['靶场', '容器管理']},
+                  }}>
+                  容器管理
+                </Link>
+              </Menu.Item>,
+              <Menu.Item key="coursemanage">
+                <Link
+                  to={{
+                    pathname: '/view/course-manage',
+                    query: {breadCrumbName: ['靶场', '靶场管理']},
+                  }}>
+                  靶场管理
+                </Link>
+              </Menu.Item>,
+            ]}
           <Menu.Item key="course">
             <Link
               to={{
@@ -94,7 +95,7 @@ export default class extends React.Component {
             </Link>
           </Menu.Item>
         </SubMenu>
-        <SubMenu
+        {/* <SubMenu
           key="sub3"
           title={
             <span>
@@ -104,7 +105,7 @@ export default class extends React.Component {
           }>
           <Menu.Item key="9">DVWA</Menu.Item>
           <Menu.Item key="10">weBug</Menu.Item>
-        </SubMenu>
+        </SubMenu> */}
       </Menu>
     )
   }

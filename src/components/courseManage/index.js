@@ -1,7 +1,9 @@
+/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 import React from 'react'
 import {Modal, Card, Popconfirm, Form, Input, message} from 'antd'
 import {EditOutlined, CloseOutlined, PlusOutlined} from '@ant-design/icons'
 import request from '@/utils/request'
+import style from './index.css'
 import imgUrl from '../../images/courseIcon.jpg'
 
 const {Meta} = Card
@@ -136,7 +138,7 @@ class extends React.Component {
     return (
       <div
         style={{
-          background: '#fff',
+          // background: '#fff',
           display: 'flex',
           flexWrap: 'wrap',
           justifyContent: 'flex-start',
@@ -147,18 +149,30 @@ class extends React.Component {
               <div style={{flex: '0 0 auto'}}>
                 <Card
                   hoverable
-                  style={{width: 240, height: 300}}
+                  className={style.cardContainer}
                   cover={
-                    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
-                    <img
-                      alt="example"
-                      src={imgUrl}
-                      onClick={() => {
-                        this.props.history.push(
-                          `/view/course-manage/detail?id=${type.typeId}`
-                        )
-                      }}
-                    />
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        // width: 240,
+                        height: 160,
+                        // padding: 26,
+                      }}>
+                      <div style={{width: 140, height: 125}}>
+                        <img
+                          alt="example"
+                          src={imgUrl}
+                          className={style.img}
+                          onClick={() => {
+                            this.props.history.push(
+                              `/view/course-manage/detail?id=${type.typeId}`
+                            )
+                          }}
+                        />
+                      </div>
+                    </div>
                   }
                   actions={[
                     <EditOutlined
@@ -184,11 +198,11 @@ class extends React.Component {
         <div style={{flex: 1}}>
           <Card
             hoverable
-            style={{width: 240}}
+            className={style.cardContainer}
             cover={
               <div
                 style={{
-                  height: 191,
+                  height: 160,
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',

@@ -1,5 +1,5 @@
 import React from 'react'
-import {Button, Table, message, Modal} from 'antd'
+import {Button, Table, message, Modal, Select} from 'antd'
 import request from '@/utils/request'
 
 const difficultyNames = {
@@ -14,6 +14,7 @@ export default class extends React.Component {
     courseTypeList: [],
     currentPort: '',
     portModalVisible: false,
+    filters: {},
   }
   componentDidMount = () => {
     this.getCourseList({})
@@ -21,7 +22,7 @@ export default class extends React.Component {
   }
   getCourseList = params => {
     const queryString = Object.keys(params)
-      .map(key => `${key}=${params[key]}`)
+      .map(key => (params[key] ? `${key}=${params[key]}` : ''))
       .join('&')
     request(`/api/course/list?${queryString}`).then(result => {
       this.setState({
@@ -155,11 +156,75 @@ export default class extends React.Component {
       )
     )
   }
+  onSelectDifficulty = value => {
+    const {filters} = this.state
+    this.setState({
+      filters: {
+        ...filters,
+        difficulty: value,
+      },
+    })
+  }
+  onSelectType = value => {
+    const {filters} = this.state
+    this.setState({
+      filters: {
+        ...filters,
+        typeId: value,
+      },
+    })
+  }
   render() {
+    const {courseTypeList} = this.state
     return (
-      <div style={{background: '#fff'}}>
-        <Table columns={this.getColumns()} dataSource={this.state.courseList} />
-        {this.portModal()}
+      <div>
+        <div style={{background: '#fff', marginBottom: 14, padding: 16}}>
+          <span>靶场类别：</span>
+          <Select
+            style={{width: 200, marginRight: 8}}
+            placeholder="请选择"
+            allowClear
+            onChange={value => {
+              this.onSelectType(value)
+            }}>
+            {courseTypeList &&
+              courseTypeList.map(type => {
+                return (
+                  <Select.Option value={type.typeId}>
+                    {type.typeName}
+                  </Select.Option>
+                )
+              })}
+          </Select>
+          <span>靶场难度：</span>
+          <Select
+            style={{width: 150, marginRight: 16}}
+            placeholder="请选择"
+            allowClear
+            onChange={value => {
+              this.onSelectDifficulty(value)
+            }}>
+            <Select.Option value="0">入门</Select.Option>
+            <Select.Option value="1">简单</Select.Option>
+            <Select.Option value="2">中级</Select.Option>
+            <Select.Option value="3">高级</Select.Option>
+          </Select>
+          {/* <Button>重置</Button> */}
+          <Button
+            type="primary"
+            onClick={() => {
+              this.getCourseList(this.state.filters)
+            }}>
+            查询
+          </Button>
+        </div>
+        <div style={{background: '#fff'}}>
+          <Table
+            columns={this.getColumns()}
+            dataSource={this.state.courseList}
+          />
+          {this.portModal()}
+        </div>
       </div>
     )
   }

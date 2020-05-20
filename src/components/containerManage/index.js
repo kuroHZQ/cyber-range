@@ -1,15 +1,18 @@
 import React from 'react'
 import moment from 'moment'
-import {Table, message, Popconfirm, Spin} from 'antd'
+import {Table, message, Popconfirm, Spin, Select, Button, Input} from 'antd'
 import request from '@/utils/request'
 
 export default class extends React.Component {
   state = {
     containerList: [],
+    imageList: [],
     loading: [],
+    filters: {},
   }
   componentDidMount() {
     this.getContainerList()
+    this.getImageList()
   }
   getColumns = () => [
     {
@@ -92,9 +95,24 @@ export default class extends React.Component {
       },
     },
   ]
+  getImageList = () => {
+    request('/docker/images/json').then(result => {
+      this.setState({imageList: result})
+    })
+  }
   getContainerList = () => {
-    request('/docker/containers/json?all=1').then(result => {
-      this.setState({containerList: result})
+    const {filters} = this.state
+    const dockerFilters = {
+      status: filters.status,
+    }
+    request(
+      `/docker/containers/json?all=1&filters=${JSON.stringify(dockerFilters)}`
+    ).then(result => {
+      let newResult = result
+      if (filters.image) {
+        newResult = result.filter(item => item.ImageID === filters.image)
+      }
+      this.setState({containerList: newResult})
     })
   }
   openContainer = id => {
@@ -132,17 +150,96 @@ export default class extends React.Component {
   }
   deleteContainer = id => {
     request.delete(`/docker/containers/${id}`).then(() => {
-      this.getContainerList()
-      message.success('删除容器成功')
+      request.delete(`/api/selectcourse/deleteByContainerId/${id}`).then(() => {
+        this.getContainerList()
+        message.success('删除容器成功')
+      })
+    })
+  }
+  onInputId = e => {
+    const {filters} = this.state
+    this.setState({
+      filters: {
+        ...filters,
+        id: e.target.value,
+      },
+    })
+  }
+  onSelectStatus = value => {
+    const {filters} = this.state
+    this.setState({
+      filters: {
+        ...filters,
+        status: value,
+      },
+    })
+  }
+  onSelectImage = value => {
+    const {filters} = this.state
+    this.setState({
+      filters: {
+        ...filters,
+        image: value,
+      },
     })
   }
   render() {
+    const {imageList} = this.state
     return (
-      <div style={{background: '#fff'}}>
-        <Table
-          columns={this.getColumns()}
-          dataSource={this.state.containerList}
-        />
+      <div>
+        <div style={{background: '#fff', marginBottom: 14, padding: 16}}>
+          {/* <span>容器ID：</span>
+          <Input
+            style={{width: 200, marginRight: 8}}
+            placeholder="请输入"
+            allowClear
+            onChange={this.onInputId}
+          /> */}
+          <span>状态：</span>
+          <Select
+            style={{width: 230, marginRight: 16}}
+            placeholder="请选择"
+            allowClear
+            mode="multiple"
+            onChange={value => {
+              this.onSelectStatus(value)
+            }}>
+            <Select.Option value="created">created</Select.Option>
+            <Select.Option value="running">running</Select.Option>
+            <Select.Option value="exited">exited</Select.Option>
+          </Select>
+          <span>所用镜像：</span>
+          <Select
+            style={{width: 230, marginRight: 16}}
+            placeholder="请选择"
+            allowClear
+            onChange={value => {
+              this.onSelectImage(value)
+            }}>
+            {imageList &&
+              imageList.map(item => {
+                return (
+                  <Select.Option value={item.Id}>
+                    {item.RepoTags[0]}
+                  </Select.Option>
+                )
+              })}
+          </Select>
+          {/* <Button>重置</Button> */}
+          <Button
+            type="primary"
+            onClick={() => {
+              this.getContainerList()
+            }}>
+            查询
+          </Button>
+        </div>
+        <div style={{background: '#fff'}}>
+          <Table
+            columns={this.getColumns()}
+            dataSource={this.state.containerList}
+          />
+        </div>
       </div>
     )
   }

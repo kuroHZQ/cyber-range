@@ -1,6 +1,6 @@
 import React from 'react'
 import moment from 'moment'
-import {Table, message, Popconfirm, Spin, Select, Button, Input} from 'antd'
+import {Table, message, Popconfirm, Spin, Select, Button} from 'antd'
 import request from '@/utils/request'
 
 export default class extends React.Component {

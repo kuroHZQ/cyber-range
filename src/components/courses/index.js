@@ -15,6 +15,7 @@ export default class extends React.Component {
     currentPort: '',
     portModalVisible: false,
     filters: {},
+    loading: false,
   }
   componentDidMount = () => {
     this.getCourseList({})
@@ -96,6 +97,7 @@ export default class extends React.Component {
       `/api/selectcourse/check?userId=${userInfo.id}&courseId=${course.courseId}`
     ).then(checkResult => {
       if (checkResult.success) {
+        this.setPortModalVisible(true, '', true)
         request.post('/docker/containers/create', config).then(result => {
           const body = {
             courseId: course.courseId,
@@ -109,7 +111,7 @@ export default class extends React.Component {
                   containerInfo => {
                     const port =
                       containerInfo.NetworkSettings.Ports['80/tcp'][0].HostPort
-                    this.setPortModalVisible(true, port)
+                    this.setPortModalVisible(true, port, false)
                   }
                 )
               })
@@ -128,14 +130,15 @@ export default class extends React.Component {
       }
     })
   }
-  setPortModalVisible = (portModalVisible, currentPort) => {
+  setPortModalVisible = (portModalVisible, currentPort, loading) => {
     this.setState({
       portModalVisible,
       currentPort,
+      loading,
     })
   }
   portModal = () => {
-    const {portModalVisible, currentPort} = this.state
+    const {portModalVisible, currentPort, loading} = this.state
     return (
       portModalVisible && (
         <Modal
@@ -143,15 +146,21 @@ export default class extends React.Component {
           visible
           okText="确认"
           onOk={() => {
-            this.setPortModalVisible(false)
+            this.setPortModalVisible(false, '', false)
           }}
           cancelButtonProps={{hidden: true}}>
-          靶场构建成功，请前往
-          <a
-            href={`http://49.235.52.63:${currentPort}`}
-            rel="noopener noreferrer"
-            target="_blank">{`http://49.235.52.63:${currentPort}`}</a>
-          <div>温馨提示：若页面打不开，请等待一会再刷新。</div>
+          {loading ? (
+            '靶场正在构建，请稍等...'
+          ) : (
+            <div>
+              <span>靶场构建成功，请前往</span>{' '}
+              <a
+                href={`http://49.235.52.63:${currentPort}`}
+                rel="noopener noreferrer"
+                target="_blank">{`http://49.235.52.63:${currentPort}`}</a>
+              <div>温馨提示：若页面打不开，请等待一会再刷新。</div>
+            </div>
+          )}
         </Modal>
       )
     )
